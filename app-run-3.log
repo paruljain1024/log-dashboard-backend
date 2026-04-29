@@ -1,0 +1,610 @@
+[INFO] Scanning for projects...
+[INFO] 
+[INFO] ------------------------< report:log-dashboard >------------------------
+[INFO] Building log-dashboard 1.0
+[INFO]   from pom.xml
+[INFO] --------------------------------[ jar ]---------------------------------
+[INFO] 
+[INFO] >>> spring-boot:3.2.5:run (default-cli) > test-compile @ log-dashboard >>>
+[INFO] 
+[INFO] --- resources:3.3.1:resources (default-resources) @ log-dashboard ---
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] Copying 1 resource from src\main\resources to target\classes
+[INFO] 
+[INFO] --- compiler:3.11.0:compile (default-compile) @ log-dashboard ---
+[INFO] Changes detected - recompiling the module! :source
+[INFO] Compiling 39 source files with javac [debug release 17] to target\classes
+[INFO] 
+[INFO] --- resources:3.3.1:testResources (default-testResources) @ log-dashboard ---
+[INFO] skip non existing resourceDirectory C:\Users\parul.jain2\IdeaProjects\project\src\test\resources
+[INFO] 
+[INFO] --- compiler:3.11.0:testCompile (default-testCompile) @ log-dashboard ---
+[INFO] No sources to compile
+[INFO] 
+[INFO] <<< spring-boot:3.2.5:run (default-cli) < test-compile @ log-dashboard <<<
+[INFO] 
+[INFO] 
+[INFO] --- spring-boot:3.2.5:run (default-cli) @ log-dashboard ---
+[INFO] Attaching agents: []
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+ :: Spring Boot ::                (v3.2.5)
+
+2026-04-01T15:38:15.056+05:30  INFO 14408 --- [           main] report.DashboardApplication              : Starting DashboardApplication using Java 17.0.12 with PID 14408 (C:\Users\parul.jain2\IdeaProjects\project\target\classes started by parul.jain2 in C:\Users\parul.jain2\IdeaProjects\project)
+2026-04-01T15:38:15.059+05:30  INFO 14408 --- [           main] report.DashboardApplication              : No active profile set, falling back to 1 default profile: "default"
+2026-04-01T15:38:15.956+05:30  INFO 14408 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-04-01T15:38:15.977+05:30  INFO 14408 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-04-01T15:38:15.977+05:30  INFO 14408 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.20]
+2026-04-01T15:38:16.041+05:30  INFO 14408 --- [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-04-01T15:38:16.042+05:30  INFO 14408 --- [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 932 ms
+2026-04-01T15:38:16.414+05:30  INFO 14408 --- [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path ''
+2026-04-01T15:38:16.421+05:30  INFO 14408 --- [           main] report.DashboardApplication              : Started DashboardApplication in 1.699 seconds (process running for 1.971)
+2026-04-01T15:38:21.091+05:30  INFO 14408 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-04-01T15:38:21.091+05:30  INFO 14408 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-04-01T15:38:21.093+05:30  INFO 14408 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+? Processing Started
+? Scanning base directory: C:\Users\parul.jain2\logs
+   ? Found log file: C:\Users\parul.jain2\logs\OCIAPP2\ChannelGatewayRequestLog-06.log
+   ? Found log file: C:\Users\parul.jain2\logs\OCIAPP2\ChannelRequestDailyLog-06.log
+   ? Found log file: C:\Users\parul.jain2\logs\OCIAPP2\Web_PreTUPs_out.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_00.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_01.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_02.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_03.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_04.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_05.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_06.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_07.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_08.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_09.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_10.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_11.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_12.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_13.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_14.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_15.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_16.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_17.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_18.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_19.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_20.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_21.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_22.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\channelGatewayRequestLog_23.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\ChannelRequestDailyLog.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_00.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_01.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_02.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_03.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_04.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_05.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_06.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_07.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_08.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_09.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_10.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_11.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_12.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_13.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_14.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_15.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_16.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_17.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_18.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_19.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_20.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_21.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_22.log
+   ? Found log file: C:\Users\parul.jain2\logs\pretups_smsrlogs\PreTUPs_out_23.log
+? Total log files discovered: 52
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Resume from line: 2098587
+? Backup saved at line: 4401
+? Backup saved at line: 1693
+? Parsing completed
+? Parsing completed
+? Backup saved at line: 3537
+? Parsing completed
+? Backup saved at line: 5228
+? Parsing completed
+? Backup saved at line: 1613
+? Parsing completed
+? Backup saved at line: 1648
+? Parsing completed
+? Resume from line: 1648
+? Resume from line: 1648
+? Resume from line: 1648
+? Resume from line: 1648
+? Resume from line: 1648
+? Resume from line: 1648
+? Backup saved at line: 12603
+? Parsing completed
+? Backup saved at line: 13053
+? Parsing completed
+? Resume from line: 16830
+? Resume from line: 16830
+? Backup saved at line: 16830
+? Parsing completed
+? Resume from line: 16830
+? Backup saved at line: 30525
+? Parsing completed
+? Resume from line: 30525
+? Backup saved at line: 27065
+? Parsing completed
+? Resume from line: 27065
+? Backup saved at line: 46599
+? Parsing completed
+? Resume from line: 46599
+? Backup saved at line: 56705
+? Parsing completed
+? Resume from line: 56705
+? Backup saved at line: 25727
+? Parsing completed
+? Resume from line: 25727
+? Backup saved at line: 75290
+? Parsing completed
+? Backup saved at line: 74891
+? Parsing completed
+? Resume from line: 74891
+? Resume from line: 74891
+? Backup saved at line: 100000
+? Backup saved at line: 34290
+? Parsing completed
+? Backup at line: 100000
+? Resume from line: 34290
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 70698
+? Parsing completed
+? Resume from line: 70698
+? Backup saved at line: 33904
+? Parsing completed
+? Backup saved at line: 100964
+? Parsing completed
+? Resume from line: 100964
+? Resume from line: 100964
+? Backup saved at line: 107253
+? Parsing completed
+? Resume from line: 107253
+? Backup saved at line: 33454
+? Parsing completed
+? Resume from line: 33454
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 45248
+? Parsing completed
+? Backup saved at line: 85116
+? Parsing completed
+? Resume from line: 85116
+? Resume from line: 85116
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 37889
+? Parsing completed
+? Resume from line: 37889
+? Backup saved at line: 42091
+? Parsing completed
+? Backup saved at line: 41020
+? Parsing completed
+? Resume from line: 41020
+? Resume from line: 41020
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 53626
+? Parsing completed
+? Resume from line: 53626
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 69414
+? Parsing completed
+? Resume from line: 69414
+? Backup saved at line: 337128
+? Parsing completed
+? Resume from line: 337128
+? Backup saved at line: 71585
+? Parsing completed
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Resume from line: 200000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 263722
+? Parsing completed
+? Resume from line: 263722
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 90669
+? Parsing completed
+? Resume from line: 90669
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 95908
+? Parsing completed
+? Resume from line: 95908
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 535149
+? Parsing completed
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Resume from line: 500000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 500000
+? Backup at line: 500000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 106936
+? Parsing completed
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Resume from line: 900000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 600000
+? Backup at line: 600000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 762409
+? Parsing completed
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 700000
+? Backup at line: 700000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 806789
+? Parsing completed
+? Backup saved at line: 828636
+? Parsing completed
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 921462
+? Parsing completed
+? Backup saved at line: 800000
+? Backup at line: 800000
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 495975
+? Parsing completed
+? Backup saved at line: 900000
+? Backup at line: 900000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 859938
+? Parsing completed
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1136511
+? Parsing completed
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1000000
+? Backup at line: 1000000
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1070019
+? Parsing completed
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1400000
+? Backup at line: 1400000
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 1100000
+? Backup at line: 1100000
+? Backup saved at line: 1400000
+? Backup at line: 1400000
+? Backup saved at line: 1400000
+? Backup at line: 1400000
+? Backup saved at line: 1400000
+? Backup at line: 1400000
+? Backup saved at line: 1500000
+? Backup at line: 1500000
+? Backup saved at line: 100000
+? Backup at line: 100000
+? Backup saved at line: 1400000
+? Backup at line: 1400000
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1409009
+? Parsing completed
+? Backup saved at line: 1200000
+? Backup at line: 1200000
+? Backup saved at line: 1500000
+? Backup at line: 1500000
+? Backup saved at line: 1600000
+? Backup at line: 1600000
+? Backup saved at line: 1460452
+? Parsing completed
+? Backup saved at line: 1447094
+? Parsing completed
+? Backup saved at line: 1400000
+? Backup at line: 1400000
+? Backup saved at line: 1600000
+? Backup at line: 1600000
+? Backup saved at line: 1300000
+? Backup at line: 1300000
+? Backup saved at line: 1700000
+? Backup at line: 1700000
+? Backup saved at line: 1500000
+? Backup at line: 1500000
+? Backup saved at line: 1700000
+? Backup at line: 1700000
+? Backup saved at line: 1336108
+? Parsing completed
+? Backup saved at line: 1800000
+? Backup at line: 1800000
+? Backup saved at line: 1600000
+? Backup at line: 1600000
+? Backup saved at line: 1800000
+? Backup at line: 1800000
+? Backup saved at line: 1900000
+? Backup at line: 1900000
+? Backup saved at line: 1700000
+? Backup at line: 1700000
+? Backup saved at line: 2000000
+? Backup at line: 2000000
+? Backup saved at line: 1878090
+? Parsing completed
+? Backup saved at line: 1740729
+? Parsing completed
+? Backup saved at line: 2098587
+? Parsing completed
+? Backup saved at line: 200000
+? Backup at line: 200000
+? Backup saved at line: 300000
+? Backup at line: 300000
+? Backup saved at line: 400000
+? Backup at line: 400000
+? Backup saved at line: 427419
+? Parsing completed
+? Finalizing Metrics...
+Cache Cleared
+? Metrics Calculated
+^C
