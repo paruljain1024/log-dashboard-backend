@@ -4,7 +4,21 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="9a099b1c-5998-4bc7-baf1-8d19bdb5373d" name="Changes" comment="" />
+    <list default="true" id="9a099b1c-5998-4bc7-baf1-8d19bdb5373d" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/metrics_backup.bin" beforeDir="false" afterPath="$PROJECT_DIR$/metrics_backup.bin" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/controller/ProcessingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/controller/ProcessingController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/LogProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/LogProcessingService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/MetricsStorageService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/MetricsStorageService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/ProcessingStatusService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/ProcessingStatusService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/controller/DashboardMetricsController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/controller/DashboardMetricsController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/controller/ProcessingController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/controller/ProcessingController.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/service/LogProcessingService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/LogProcessingService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/service/MetricsStorageService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/MetricsStorageService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/service/ProcessingStatusService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/ProcessingStatusService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/log-dashboard-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/log-dashboard-1.0.jar" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/log-dashboard-1.0.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/log-dashboard-1.0.jar.original" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -16,6 +30,9 @@
         <option value="Class" />
       </list>
     </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
   <component name="ProjectColorInfo">{
   &quot;customColor&quot;: &quot;&quot;,
@@ -33,7 +50,9 @@
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
     &quot;RunOnceActivity.TerminalTabsStorage.copyFrom.TerminalArrangementManager.252&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
     &quot;Spring Boot.DashboardApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;
   }
 }</component>
@@ -66,6 +85,16 @@
           <url>file://$PROJECT_DIR$/src/main/java/report/controller/DashboardMetricsController.java</url>
           <line>139</line>
           <option name="timeStamp" value="3" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/report/service/LogFileLocator.java</url>
+          <line>20</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="java-line">
+          <url>file://$PROJECT_DIR$/src/main/java/report/service/ConfigLoader.java</url>
+          <line>21</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

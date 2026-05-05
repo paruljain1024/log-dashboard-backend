@@ -30,6 +30,12 @@ public class ProcessingController {
 
         Map<String, Object> res = new HashMap<>();
 
+        if (statusService.isProcessing()) {
+            res.put("started", false);
+            res.put("message", "Processing already running");
+            return res;
+        }
+
         var logFiles = report.service.LogFileLocator.findAllLogFiles();
 
         if (logFiles.isEmpty()) {

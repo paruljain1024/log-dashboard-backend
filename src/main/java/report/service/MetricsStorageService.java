@@ -1,4 +1,3 @@
-//storing latest calculated data in metrics result
 package report.service;
 
 import org.springframework.stereotype.Service;
@@ -7,7 +6,11 @@ import report.metrics.MetricsResult;
 @Service
 public class MetricsStorageService {
 
-    private MetricsResult latestResult;
+    // 🔥 ACTIVE RESULT (used by all users)
+    private volatile MetricsResult activeResult;
+
+    // 🔥 PROCESSING RESULT (building in background)
+    private volatile MetricsResult processingResult;
 
     private Runnable cacheClearCallback;
 
@@ -15,24 +18,28 @@ public class MetricsStorageService {
         this.cacheClearCallback = callback;
     }
 
-
-    public void store(MetricsResult result) {
-        this.latestResult = result;
-
-        runCacheClearCallback();
+    // 🔹 called during processing completion
+    public void setProcessingResult(MetricsResult result) {
+        this.processingResult = result;
     }
 
+    // 🔹 swap safely after processing completes
+    public synchronized void promoteProcessingToActive() {
+        if (processingResult != null) {
+            this.activeResult = processingResult;
+            this.processingResult = null;
+
+            runCacheClearCallback(); // clear filter cache
+        }
+    }
+
+    // 🔹 always return ACTIVE result
     public MetricsResult get() {
-        return latestResult;
+        return activeResult;
     }
 
     public boolean hasData() {
-        return latestResult != null;
-    }
-
-    public void clear() {
-        latestResult = null;
-        runCacheClearCallback();
+        return activeResult != null;
     }
 
     private void runCacheClearCallback() {

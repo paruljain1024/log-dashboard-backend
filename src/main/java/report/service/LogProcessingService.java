@@ -34,18 +34,22 @@ public class LogProcessingService {
 
     @Async
     public void processLogsAsync() {
+
+        // 🔥 block if already processing
+        if (!statusService.tryStart()) {
+            System.out.println("Already processing - request ignored");
+            return;
+        }
+
         try {
-            stats.reset();
             statusService.setRunning();
-            storage.clear();
-            backupService.clear();
 
             processLogs();
 
-            // ✅ ONLY mark completed if NOT FAILED
             if (!"FAILED".equals(statusService.getStatus(0).get("status"))) {
                 statusService.setCompleted();
             }
+
         } catch (Exception e) {
             statusService.setFailed(e.getMessage());
             e.printStackTrace();
@@ -69,20 +73,21 @@ public class LogProcessingService {
     }
 
     public void processLogs() throws Exception {
-        System.out.println("Processing Started");
+
+        ProcessingStats stats = new ProcessingStats(); // ✅ LOCAL now
 
         List<File> logFiles = LogFileLocator.findAllLogFiles();
+
         if (logFiles.isEmpty()) {
-            System.out.println("No logs found");
-
-            statusService.setFailed("No log files found");  // 🔥 ADD THIS
-
-            return;  // 🔥 VERY IMPORTANT
+            statusService.setFailed("No log files found");
+            return;
         }
 
         MetricsCalculator globalCalculator = new MetricsCalculator();
+
         int threads = Math.max(1, Runtime.getRuntime().availableProcessors());
         ExecutorService executor = Executors.newFixedThreadPool(threads);
+
         AtomicInteger processedFiles = new AtomicInteger(0);
         int totalFiles = logFiles.size();
 
@@ -92,9 +97,11 @@ public class LogProcessingService {
 
                 try {
                     new LogParserTask(file, localCalculator, stats).run();
+
                     synchronized (globalCalculator) {
                         globalCalculator.merge(localCalculator);
                     }
+
                 } finally {
                     int done = processedFiles.incrementAndGet();
                     int percent = (int) ((done * 100.0) / totalFiles);
@@ -106,14 +113,13 @@ public class LogProcessingService {
         executor.shutdown();
         executor.awaitTermination(30, TimeUnit.HOURS);
 
-        System.out.println("Finalizing Metrics...");
-
         MetricsResult result = globalCalculator.getResult();
-        storage.store(result);
-        backupService.save(result, 0);
 
-        System.out.println("Metrics Calculated");
-        //statusService.setCompleted();
+        // 🔥 IMPORTANT: DO NOT overwrite active immediately
+        storage.setProcessingResult(result);
+
+        // 🔥 SAFE SWAP
+        storage.promoteProcessingToActive();
     }
 
     public long getProcessingSpeed() {
