@@ -43,6 +43,9 @@ public class LogParserTask implements Runnable {
             String line;
             while ((line = br.readLine()) != null) {
                 processLine(line);
+                stats.addProcessedBytes(
+                        line.length()
+                );
             }
 
             System.out.println("Parsing completed: " + logFile.getName());
@@ -215,21 +218,44 @@ public class LogParserTask implements Runnable {
     }
 
     private Long extractMetric(String line, String key) {
+
         int start = line.indexOf(key);
+
         if (start == -1) {
             return null;
         }
 
         start += key.length();
+
         int end = start;
 
-        while (end < line.length() && Character.isDigit(line.charAt(end))) {
+        while (end < line.length()) {
+
+            char ch = line.charAt(end);
+
+            if (!Character.isDigit(ch) && ch != '.') {
+                break;
+            }
+
             end++;
         }
 
         try {
-            return Long.parseLong(line.substring(start, end));
+
+            double value =
+                    Double.parseDouble(
+                            line.substring(start, end)
+                    );
+
+            // 🔥 FILTER INVALID HUGE TIMINGS
+            if (value < 0 || value > 100000) {
+                return null;
+            }
+
+            return (long) value;
+
         } catch (Exception e) {
+
             return null;
         }
     }

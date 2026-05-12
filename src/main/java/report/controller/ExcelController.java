@@ -52,12 +52,18 @@ public class ExcelController {
     }
 
     @GetMapping("/download-formatted")
-    public ResponseEntity<byte[]> downloadFormatted() throws Exception {
+    public ResponseEntity<byte[]> downloadFormatted(
+            @RequestParam String user
+    ) throws Exception {
 
-        byte[] file = service.generateFullReport();
+        byte[] file =
+                service.generateFullReport(user);
 
         return ResponseEntity.ok()
-                .header("Content-Disposition", "attachment; filename=Formatted_Report.xlsx")
+                .header(
+                        "Content-Disposition",
+                        "attachment; filename=Formatted_Report"+ user +".xlsx"
+                )
                 .body(file);
     }
 }

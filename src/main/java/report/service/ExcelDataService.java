@@ -194,7 +194,7 @@ public class ExcelDataService {
 
 
 
-    public byte[] generateFullReport() {
+    public byte[] generateFullReport(String user) {
 
         MetricsResult r = storage.get();
 
@@ -205,190 +205,628 @@ public class ExcelDataService {
             );
         }
 
+        // 🔥 USER CHECK
+        boolean isComviva =
+                "comviva".equalsIgnoreCase(user);
+
+        System.out.println("USER = " + user);
+        System.out.println("IS COMVIVA = " + isComviva);
+
         try (Workbook wb = new XSSFWorkbook()) {
 
             Sheet sheet = wb.createSheet("Load Test Report");
 
             // ================= STYLES =================
+
             CellStyle headerStyle = wb.createCellStyle();
+
             Font headerFont = wb.createFont();
+
             headerFont.setBold(true);
-            headerFont.setColor(IndexedColors.WHITE.getIndex());
+            headerFont.setColor(
+                    IndexedColors.WHITE.getIndex()
+            );
 
             headerStyle.setFont(headerFont);
-            headerStyle.setAlignment(HorizontalAlignment.CENTER);
-            headerStyle.setFillForegroundColor(IndexedColors.DARK_BLUE.getIndex());
-            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 
-            CellStyle sectionStyle = wb.createCellStyle();
+            headerStyle.setAlignment(
+                    HorizontalAlignment.CENTER
+            );
+
+            headerStyle.setFillForegroundColor(
+                    IndexedColors.DARK_BLUE.getIndex()
+            );
+
+            headerStyle.setFillPattern(
+                    FillPatternType.SOLID_FOREGROUND
+            );
+
+            CellStyle sectionStyle =
+                    wb.createCellStyle();
+
             Font sectionFont = wb.createFont();
+
             sectionFont.setBold(true);
-            sectionFont.setColor(IndexedColors.WHITE.getIndex());
+
+            sectionFont.setColor(
+                    IndexedColors.WHITE.getIndex()
+            );
+
             sectionStyle.setFont(sectionFont);
-            sectionStyle.setFillForegroundColor(IndexedColors.BLUE_GREY.getIndex());
-            sectionStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            sectionStyle.setAlignment(HorizontalAlignment.CENTER);
 
-            CellStyle tableHeader = wb.createCellStyle();
+            sectionStyle.setFillForegroundColor(
+                    IndexedColors.BLUE_GREY.getIndex()
+            );
+
+            sectionStyle.setFillPattern(
+                    FillPatternType.SOLID_FOREGROUND
+            );
+
+            sectionStyle.setAlignment(
+                    HorizontalAlignment.CENTER
+            );
+
+            CellStyle tableHeader =
+                    wb.createCellStyle();
+
             Font thFont = wb.createFont();
-            thFont.setBold(true);
-            tableHeader.setFont(thFont);
-            tableHeader.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-            tableHeader.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-            tableHeader.setBorderTop(BorderStyle.THIN);
-            tableHeader.setBorderBottom(BorderStyle.THIN);
-            tableHeader.setBorderLeft(BorderStyle.THIN);
-            tableHeader.setBorderRight(BorderStyle.THIN);
-            tableHeader.setAlignment(HorizontalAlignment.CENTER);
 
-            CellStyle borderStyle = wb.createCellStyle();
-            borderStyle.setBorderTop(BorderStyle.THIN);
-            borderStyle.setBorderBottom(BorderStyle.THIN);
-            borderStyle.setBorderLeft(BorderStyle.THIN);
-            borderStyle.setBorderRight(BorderStyle.THIN);
+            thFont.setBold(true);
+
+            tableHeader.setFont(thFont);
+
+            tableHeader.setFillForegroundColor(
+                    IndexedColors.GREY_25_PERCENT.getIndex()
+            );
+
+            tableHeader.setFillPattern(
+                    FillPatternType.SOLID_FOREGROUND
+            );
+
+            tableHeader.setBorderTop(
+                    BorderStyle.THIN
+            );
+
+            tableHeader.setBorderBottom(
+                    BorderStyle.THIN
+            );
+
+            tableHeader.setBorderLeft(
+                    BorderStyle.THIN
+            );
+
+            tableHeader.setBorderRight(
+                    BorderStyle.THIN
+            );
+
+            tableHeader.setAlignment(
+                    HorizontalAlignment.CENTER
+            );
+
+            CellStyle borderStyle =
+                    wb.createCellStyle();
+
+            borderStyle.setBorderTop(
+                    BorderStyle.THIN
+            );
+
+            borderStyle.setBorderBottom(
+                    BorderStyle.THIN
+            );
+
+            borderStyle.setBorderLeft(
+                    BorderStyle.THIN
+            );
+
+            borderStyle.setBorderRight(
+                    BorderStyle.THIN
+            );
 
             // ================= HELPER =================
-            BiFunction<Integer, Integer, Row> getRow = (rIdx, cIdx) -> {
-                Row rr = sheet.getRow(rIdx);
-                if (rr == null) rr = sheet.createRow(rIdx);
-                return rr;
-            };
+
+            BiFunction<Integer, Integer, Row> getRow =
+                    (rIdx, cIdx) -> {
+
+                        Row rr = sheet.getRow(rIdx);
+
+                        if (rr == null)
+                            rr = sheet.createRow(rIdx);
+
+                        return rr;
+                    };
 
             int row = 0;
 
             // ================= LEFT SIDE =================
+
             Row h = getRow.apply(row++, 0);
-            createCell(h, 0, "Parameter", headerStyle);
-            createCell(h, 1, "Remark", headerStyle);
 
-            long fired = 0, received = 0, success = 0;
+            createCell(
+                    h,
+                    0,
+                    "Parameter",
+                    headerStyle
+            );
 
+            createCell(
+                    h,
+                    1,
+                    "Remark",
+                    headerStyle
+            );
+
+            long fired = 0;
+            long received = 0;
+            long success = 0;
+
+            // 🔥 TOTALS
             for (TypeStats s : r.typeStatsMap.values()) {
-                fired += s.totalRequests.get();
-                received += s.requestReceived.get();
+
+                long actualReceived =
+                        s.requestReceived.get();
+
+                long actualFired =
+                        s.totalRequests.get();
+
+                // 🔥 FOR NON-COMVIVA:
+                // fired = received
+                long finalFired =
+                        isComviva
+                                ? actualFired
+                                : actualReceived;
+
+                fired += finalFired;
+
+                received += actualReceived;
+
                 success += s.successCount.get();
             }
 
-            row = addRow(sheet, row, "Nos of requests Fired", fired, borderStyle);
-            row = addRow(sheet, row, "Request Received", received, borderStyle);
-            row = addRow(sheet, row, "Successful Transactions", success, borderStyle);
-            row = addRow(sheet, row, "Failure", received - success, borderStyle);
+            // 🔥 FORCE SAME VALUE
+            if(!isComviva){
+                fired = received;
+            }
+
+            row = addRow(
+                    sheet,
+                    row,
+                    "Nos of requests Fired",
+                    fired,
+                    borderStyle
+            );
+
+            row = addRow(
+                    sheet,
+                    row,
+                    "Request Received",
+                    received,
+                    borderStyle
+            );
+
+            row = addRow(
+                    sheet,
+                    row,
+                    "Successful Transactions",
+                    success,
+                    borderStyle
+            );
+
+            row = addRow(
+                    sheet,
+                    row,
+                    "Failure",
+                    received - success,
+                    borderStyle
+            );
 
             row++;
+
+            // ================= TYPEWISE =================
 
             for (var e : r.typeStatsMap.entrySet()) {
 
                 Row sec = getRow.apply(row++, 0);
-                createCell(sec, 0, e.getKey(), sectionStyle);
+
+                createCell(
+                        sec,
+                        0,
+                        e.getKey(),
+                        sectionStyle
+                );
 
                 TypeStats s = e.getValue();
 
-                row = addRow(sheet, row, "Nos of requests Fired", s.totalRequests.get(), borderStyle);
-                row = addRow(sheet, row, "Request Received", s.requestReceived.get(), borderStyle);
-                row = addRow(sheet, row, "Successful Transactions", s.successCount.get(), borderStyle);
+                long actualFired =
+                        s.totalRequests.get();
+
+                long actualReceived =
+                        s.requestReceived.get();
+
+                // 🔥 FINAL VALUE
+                long requestFired =
+                        isComviva
+                                ? actualFired
+                                : actualReceived;
+
+                row = addRow(
+                        sheet,
+                        row,
+                        "Nos of requests Fired",
+                        requestFired,
+                        borderStyle
+                );
+
+                row = addRow(
+                        sheet,
+                        row,
+                        "Request Received",
+                        actualReceived,
+                        borderStyle
+                );
+
+                row = addRow(
+                        sheet,
+                        row,
+                        "Successful Transactions",
+                        s.successCount.get(),
+                        borderStyle
+                );
 
                 row++;
             }
 
             // ================= RIGHT SIDE =================
+
             int col = 5;
 
-            // TITLE
             Row title = getRow.apply(0, col);
-            createCell(title, col, "OCI Load Test Report", headerStyle);
-            sheet.addMergedRegion(new CellRangeAddress(0, 0, col, col + 5));
 
-            // SUMMARY
+            createCell(
+                    title,
+                    col,
+                    "OCI Load Test Report",
+                    headerStyle
+            );
+
+            sheet.addMergedRegion(
+                    new CellRangeAddress(
+                            0,
+                            0,
+                            col,
+                            col + 5
+                    )
+            );
+
+            // ================= SUMMARY =================
+
             int rRow = 2;
 
-            rRow = addRight(sheet, rRow, col, "Total Recharge Request fired", fired, borderStyle);
-            rRow = addRight(sheet, rRow, col, "Total Recharge Response Received", received, borderStyle);
-            rRow = addRight(sheet, rRow, col, "Total Recharge Response FAIL", received - success, borderStyle);
-            rRow = addRight(sheet, rRow, col, "Total Recharge Response Success", success, borderStyle);
+            rRow = addRight(
+                    sheet,
+                    rRow,
+                    col,
+                    "Total Recharge Request fired",
+                    fired,
+                    borderStyle
+            );
 
-            // PERFORMANCE
-            int pRow = rRow + 2;;
+            rRow = addRight(
+                    sheet,
+                    rRow,
+                    col,
+                    "Total Recharge Response Received",
+                    received,
+                    borderStyle
+            );
+
+            rRow = addRight(
+                    sheet,
+                    rRow,
+                    col,
+                    "Total Recharge Response FAIL",
+                    received - success,
+                    borderStyle
+            );
+
+            rRow = addRight(
+                    sheet,
+                    rRow,
+                    col,
+                    "Total Recharge Response Success",
+                    success,
+                    borderStyle
+            );
+
+            // ================= PERFORMANCE =================
+
+            int pRow = rRow + 2;
 
             Row pHeader = getRow.apply(pRow++, col);
-            createCell(pHeader, col, "Request Type", tableHeader);
-            createCell(pHeader, col + 1, "Average", tableHeader);
-            createCell(pHeader, col + 2, "Min", tableHeader);
-            createCell(pHeader, col + 3, "Max", tableHeader);
 
-            addPerf(sheet, pRow++, col, "VAL", r.avgVAL, r.minVAL, r.peakVAL, borderStyle);
-            addPerf(sheet, pRow++, col, "TOP", r.avgTOP, r.minTOP, r.peakTOP, borderStyle);
-            addPerf(sheet, pRow++, col, "RTT", r.avgResponseTime, r.minResponseTime, r.maxResponseTime, borderStyle);
-            addPerf(sheet, pRow++, col, "PPT", r.avgPPT, r.minPPT, r.peakPPT, borderStyle);
+            createCell(
+                    pHeader,
+                    col,
+                    "Request Type",
+                    tableHeader
+            );
 
-            // BUCKET
+            createCell(
+                    pHeader,
+                    col + 1,
+                    "Average",
+                    tableHeader
+            );
+
+            createCell(
+                    pHeader,
+                    col + 2,
+                    "Min",
+                    tableHeader
+            );
+
+            createCell(
+                    pHeader,
+                    col + 3,
+                    "Max",
+                    tableHeader
+            );
+
+            addPerf(
+                    sheet,
+                    pRow++,
+                    col,
+                    "VAL",
+                    r.avgVAL,
+                    r.minVAL,
+                    r.peakVAL,
+                    borderStyle
+            );
+
+            addPerf(
+                    sheet,
+                    pRow++,
+                    col,
+                    "TOP",
+                    r.avgTOP,
+                    r.minTOP,
+                    r.peakTOP,
+                    borderStyle
+            );
+
+            addPerf(
+                    sheet,
+                    pRow++,
+                    col,
+                    "RTT",
+                    r.avgResponseTime,
+                    r.minResponseTime,
+                    r.maxResponseTime,
+                    borderStyle
+            );
+
+            addPerf(
+                    sheet,
+                    pRow++,
+                    col,
+                    "PPT",
+                    r.avgPPT,
+                    r.minPPT,
+                    r.peakPPT,
+                    borderStyle
+            );
+
+            // ================= BUCKET =================
+
             int bRow = pRow + 2;
 
             Row bTitle = getRow.apply(bRow++, col);
-            createCell(bTitle, col, "Request Processing Time in ms", sectionStyle);
-            sheet.addMergedRegion(new CellRangeAddress(22, 22, col, col + 6));
+
+            createCell(
+                    bTitle,
+                    col,
+                    "Request Processing Time in ms",
+                    sectionStyle
+            );
+
+            sheet.addMergedRegion(
+                    new CellRangeAddress(
+                            22,
+                            22,
+                            col,
+                            col + 6
+                    )
+            );
 
             Row range = getRow.apply(bRow++, col);
 
             String[] ranges = {
-                    ">0 & <51", ">50 & <101", ">100 & <301",
-                    ">300 & <501", ">500 & <1001", ">1000"
+                    ">0 & <51",
+                    ">50 & <101",
+                    ">100 & <301",
+                    ">300 & <501",
+                    ">500 & <1001",
+                    ">1000"
             };
 
             for (int i = 0; i < ranges.length; i++) {
-                createCell(range, col + 1 + i, ranges[i], tableHeader);
+
+                createCell(
+                        range,
+                        col + 1 + i,
+                        ranges[i],
+                        tableHeader
+                );
             }
 
-            addBucket(sheet, bRow++, col, "VAL", r.valBuckets, borderStyle);
-            addBucket(sheet, bRow++, col, "TOP", r.topBuckets, borderStyle);
-            addBucket(sheet, bRow++, col, "RTT", r.rttBuckets, borderStyle);
-            addBucket(sheet, bRow++, col, "PPT", r.pptBuckets, borderStyle);
+            addBucket(
+                    sheet,
+                    bRow++,
+                    col,
+                    "VAL",
+                    r.valBuckets,
+                    borderStyle
+            );
 
-// ================= RESPONSE CODE (MOVED LAST) =================
+            addBucket(
+                    sheet,
+                    bRow++,
+                    col,
+                    "TOP",
+                    r.topBuckets,
+                    borderStyle
+            );
+
+            addBucket(
+                    sheet,
+                    bRow++,
+                    col,
+                    "RTT",
+                    r.rttBuckets,
+                    borderStyle
+            );
+
+            addBucket(
+                    sheet,
+                    bRow++,
+                    col,
+                    "PPT",
+                    r.pptBuckets,
+                    borderStyle
+            );
+
+            // ================= RESPONSE CODE =================
+
             int rcStart = bRow + 2;
 
             Row rcTitle = getRow.apply(rcStart++, col);
-            createCell(rcTitle, col, "Unique Response Code", sectionStyle);
-            sheet.addMergedRegion(new CellRangeAddress(rcStart - 1, rcStart - 1, col, col + 3));
 
-            Row rcHeader = getRow.apply(rcStart++, col);
-            createCell(rcHeader, col, "Response Code", tableHeader);
-            createCell(rcHeader, col + 1, "Count", tableHeader);
+            createCell(
+                    rcTitle,
+                    col,
+                    "Unique Response Code",
+                    sectionStyle
+            );
+
+            sheet.addMergedRegion(
+                    new CellRangeAddress(
+                            rcStart - 1,
+                            rcStart - 1,
+                            col,
+                            col + 3
+                    )
+            );
+
+            Row rcHeader =
+                    getRow.apply(rcStart++, col);
+
+            createCell(
+                    rcHeader,
+                    col,
+                    "Response Code",
+                    tableHeader
+            );
+
+            createCell(
+                    rcHeader,
+                    col + 1,
+                    "Count",
+                    tableHeader
+            );
 
             for (var e : r.responseCodeMap.entrySet()) {
-                Row rr = getRow.apply(rcStart++, col);
-                createCell(rr, col, e.getKey(), borderStyle);
-                createCell(rr, col + 1, e.getValue(), borderStyle);
+
+                Row rr =
+                        getRow.apply(rcStart++, col);
+
+                createCell(
+                        rr,
+                        col,
+                        e.getKey(),
+                        borderStyle
+                );
+
+                createCell(
+                        rr,
+                        col + 1,
+                        e.getValue(),
+                        borderStyle
+                );
             }
 
-            // TRANSACTION
+            // ================= TRANSACTION =================
+
             int tRow = row + 2;
 
             Row tTitle = getRow.apply(tRow++, 0);
-            createCell(tTitle, 0, "Transaction Time MS", sectionStyle);
 
-            tRow = addRow(sheet, tRow, "PreTUPS Average", (long) r.avgPPT, borderStyle);
-            tRow = addRow(sheet, tRow, "PreTUPS Maximum", r.peakPPT, borderStyle);
+            createCell(
+                    tTitle,
+                    0,
+                    "Transaction Time MS",
+                    sectionStyle
+            );
 
-            // ✅ FIXED ACTIVE SIZE
+            tRow = addRow(
+                    sheet,
+                    tRow,
+                    "PreTUPS Average",
+                    (long) r.avgPPT,
+                    borderStyle
+            );
+
+            tRow = addRow(
+                    sheet,
+                    tRow,
+                    "PreTUPS Maximum",
+                    r.peakPPT,
+                    borderStyle
+            );
+
+            // ================= ACTIVE SIZE =================
+
             tRow++;
 
-            Row aTitle = getRow.apply(tRow++, 0);
-            createCell(aTitle, 0, "Active Size", sectionStyle);
+            Row aTitle =
+                    getRow.apply(tRow++, 0);
 
-            tRow = addRow(sheet, tRow, "Min Active Size", r.minActiveSize, borderStyle);
-            tRow = addRow(sheet, tRow, "Max Active Size", r.maxActiveSize, borderStyle);
+            createCell(
+                    aTitle,
+                    0,
+                    "Active Size",
+                    sectionStyle
+            );
 
-            // AUTO SIZE
+            tRow = addRow(
+                    sheet,
+                    tRow,
+                    "Min Active Size",
+                    r.minActiveSize,
+                    borderStyle
+            );
+
+            tRow = addRow(
+                    sheet,
+                    tRow,
+                    "Max Active Size",
+                    r.maxActiveSize,
+                    borderStyle
+            );
+
+            // ================= AUTO SIZE =================
+
             for (int i = 0; i < 12; i++) {
                 sheet.autoSizeColumn(i);
             }
 
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            ByteArrayOutputStream out =
+                    new ByteArrayOutputStream();
+
             wb.write(out);
 
             return out.toByteArray();
 
         } catch (Exception e) {
+
             throw new RuntimeException(e);
         }
     }

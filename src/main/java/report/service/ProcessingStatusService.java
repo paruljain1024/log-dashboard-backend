@@ -52,7 +52,7 @@ public class ProcessingStatusService {
         return isProcessing.get();
     }
 
-    public Map<String, Object> getStatus(long speed) {
+    public Map<String, Object> getStatus(double speed) {
         Map<String, Object> map = new HashMap<>();
 
         map.put("status", status);

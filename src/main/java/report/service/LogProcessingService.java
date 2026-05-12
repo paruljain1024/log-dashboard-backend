@@ -19,17 +19,20 @@ public class LogProcessingService {
     private final MetricsStorageService storage;
     private final ProcessingStatusService statusService;
     private final BackupService backupService;
+    private final LogFileLocator logFileLocator;
 
     private final ProcessingStats stats = new ProcessingStats();
 
     public LogProcessingService(
             MetricsStorageService storage,
             ProcessingStatusService statusService,
-            BackupService backupService) {
+            BackupService backupService,
+            LogFileLocator logFileLocator) {
 
         this.storage = storage;
         this.statusService = statusService;
         this.backupService = backupService;
+        this.logFileLocator = logFileLocator;
     }
 
     @Async
@@ -74,55 +77,165 @@ public class LogProcessingService {
 
     public void processLogs() throws Exception {
 
-        ProcessingStats stats = new ProcessingStats(); // ✅ LOCAL now
+        stats.reset();
 
-        List<File> logFiles = LogFileLocator.findAllLogFiles();
+        List<File> logFiles =
+                logFileLocator.findAllLogFiles();
 
         if (logFiles.isEmpty()) {
+
             statusService.setFailed("No log files found");
+
             return;
         }
 
-        MetricsCalculator globalCalculator = new MetricsCalculator();
+        long totalBytes = logFiles.stream()
+                .mapToLong(File::length)
+                .sum();
 
-        int threads = Math.max(1, Runtime.getRuntime().availableProcessors());
-        ExecutorService executor = Executors.newFixedThreadPool(threads);
+        stats.setTotalBytes(totalBytes);
 
-        AtomicInteger processedFiles = new AtomicInteger(0);
+        MetricsCalculator globalCalculator =
+                new MetricsCalculator();
+
+        int threads = Math.max(
+                1,
+                Runtime.getRuntime().availableProcessors()
+        );
+
+        ExecutorService executor =
+                Executors.newFixedThreadPool(threads);
+
+        AtomicInteger processedFiles =
+                new AtomicInteger(0);
+
         int totalFiles = logFiles.size();
 
+        System.out.println(
+                "TOTAL FILES: " + totalFiles
+        );
+
+        System.out.println(
+                "TOTAL THREADS: " + threads
+        );
+
         for (File file : logFiles) {
+
+            System.out.println(
+                    "SUBMITTING: " + file.getName()
+            );
+
             executor.submit(() -> {
-                MetricsCalculator localCalculator = new MetricsCalculator();
+
+                MetricsCalculator localCalculator =
+                        new MetricsCalculator();
 
                 try {
-                    new LogParserTask(file, localCalculator, stats).run();
+
+                    System.out.println(
+                            "THREAD STARTED: "
+                                    + file.getName()
+                    );
+
+                    new LogParserTask(
+                            file,
+                            localCalculator,
+                            stats
+                    ).run();
+
+                    System.out.println(
+                            "PARSING FINISHED: "
+                                    + file.getName()
+                    );
 
                     synchronized (globalCalculator) {
+
+                        System.out.println(
+                                "MERGING STARTED: "
+                                        + file.getName()
+                        );
+
                         globalCalculator.merge(localCalculator);
+
+                        System.out.println(
+                                "MERGING COMPLETED: "
+                                        + file.getName()
+                        );
                     }
 
+                } catch (Exception e) {
+
+                    System.out.println(
+                            "ERROR IN FILE: "
+                                    + file.getName()
+                    );
+
+                    e.printStackTrace();
+
                 } finally {
-                    int done = processedFiles.incrementAndGet();
-                    int percent = (int) ((done * 100.0) / totalFiles);
-                    statusService.updateProgress(percent);
+
+                    int done =
+                            processedFiles.incrementAndGet();
+
+                    System.out.println(
+                            "THREAD FINISHED: "
+                                    + file.getName()
+                                    + " | DONE = "
+                                    + done
+                                    + "/"
+                                    + totalFiles
+                    );
+
+                    statusService.updateProgress(
+                            stats.getProgressPercent()
+                    );
                 }
             });
         }
 
+        System.out.println("ALL TASKS SUBMITTED");
+
         executor.shutdown();
-        executor.awaitTermination(30, TimeUnit.HOURS);
 
-        MetricsResult result = globalCalculator.getResult();
+        System.out.println("WAITING FOR THREADS...");
 
-        // 🔥 IMPORTANT: DO NOT overwrite active immediately
+        boolean finished =
+                executor.awaitTermination(
+                        30,
+                        TimeUnit.HOURS
+                );
+
+        System.out.println(
+                "THREAD WAIT RESULT: " + finished
+        );
+
+        System.out.println("ALL THREADS FINISHED");
+
+        MetricsResult result =
+                globalCalculator.getResult();
+
+        System.out.println(
+                "SAVING PROCESSING RESULT..."
+        );
+
         storage.setProcessingResult(result);
 
-        // 🔥 SAFE SWAP
+        System.out.println(
+                "PROCESSING RESULT SAVED"
+        );
+
+        System.out.println(
+                "PROMOTION STARTED"
+        );
+
         storage.promoteProcessingToActive();
+
+        System.out.println(
+                "PROMOTION COMPLETED"
+        );
     }
 
-    public long getProcessingSpeed() {
-        return stats.getSpeed();
+    public double getProcessingSpeed() {
+        return stats.getMBPerSecond();
     }
 }
