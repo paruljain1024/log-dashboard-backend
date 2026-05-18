@@ -72,7 +72,7 @@ public class MetricsCalculator {
                     : (double) totalActiveSize / countActiveSize;
         }
 
-        if (val != null) {
+        if (val != null && val > 0) {
             sumVAL += val;
             countVAL++;
             r.avgVAL = (double) sumVAL / countVAL;
@@ -84,7 +84,7 @@ public class MetricsCalculator {
                     .add(val);
         }
 
-        if (top != null) {
+        if (top != null && top > 0) {
             sumTOP += top;
             countTOP++;
             r.avgTOP = (double) sumTOP / countTOP;
@@ -96,7 +96,7 @@ public class MetricsCalculator {
                     .add(top);
         }
 
-        if (ppt != null) {
+        if (ppt != null && ppt>0) {
             sumPPT += ppt;
             countPPT++;
             r.avgPPT = (double) sumPPT / countPPT;
@@ -108,7 +108,7 @@ public class MetricsCalculator {
                     .add(ppt);
         }
 
-        if (rtt != null) {
+        if (rtt != null && rtt>0) {
             sumRTT += rtt;
             countRTT++;
             r.avgResponseTime = (double) sumRTT / countRTT;
@@ -202,13 +202,32 @@ public class MetricsCalculator {
         mergeBuckets(r.pptBuckets, o.pptBuckets);
         mergeBuckets(r.rttBuckets, o.rttBuckets);
 
-        r.minVAL = Math.min(r.minVAL, o.minVAL);
+        if (o.minVAL > 0) {
+            r.minVAL = (r.minVAL == Long.MAX_VALUE)
+                    ? o.minVAL
+                    : Math.min(r.minVAL, o.minVAL);
+        }
         r.peakVAL = Math.max(r.peakVAL, o.peakVAL);
-        r.minTOP = Math.min(r.minTOP, o.minTOP);
+        if (o.minTOP > 0) {
+            r.minTOP = (r.minTOP == Long.MAX_VALUE)
+                    ? o.minTOP
+                    : Math.min(r.minTOP, o.minTOP);
+        }
+
         r.peakTOP = Math.max(r.peakTOP, o.peakTOP);
-        r.minPPT = Math.min(r.minPPT, o.minPPT);
+        if (o.minPPT > 0) {
+            r.minPPT = (r.minPPT == Long.MAX_VALUE)
+                    ? o.minPPT
+                    : Math.min(r.minPPT, o.minPPT);
+        }
         r.peakPPT = Math.max(r.peakPPT, o.peakPPT);
-        r.minResponseTime = Math.min(r.minResponseTime, o.minResponseTime);
+        if (o.minResponseTime > 0) {
+            r.minResponseTime =
+                    (r.minResponseTime == Long.MAX_VALUE)
+                            ? o.minResponseTime
+                            : Math.min(r.minResponseTime,
+                            o.minResponseTime);
+        }
         r.maxResponseTime = Math.max(r.maxResponseTime, o.maxResponseTime);
         r.minActiveSize = Math.min(r.minActiveSize, o.minActiveSize);
         r.maxActiveSize = Math.max(r.maxActiveSize, o.maxActiveSize);
@@ -292,25 +311,55 @@ public class MetricsCalculator {
     }
 
     private void recomputeDerivedFields() {
+
         r.avgVAL = countVAL == 0 ? 0 : (double) sumVAL / countVAL;
+
         r.avgTOP = countTOP == 0 ? 0 : (double) sumTOP / countTOP;
+
         r.avgPPT = countPPT == 0 ? 0 : (double) sumPPT / countPPT;
-        r.avgResponseTime = countRTT == 0 ? 0 : (double) sumRTT / countRTT;
-        r.avgActiveSize = countActiveSize == 0 ? 0 : (double) totalActiveSize / countActiveSize;
+
+        r.avgResponseTime =
+                countRTT == 0 ? 0 : (double) sumRTT / countRTT;
+
+        r.avgActiveSize =
+                countActiveSize == 0
+                        ? 0
+                        : (double) totalActiveSize / countActiveSize;
+
+        // 🔥 FIX MIN VALUES
 
         if (countVAL == 0) {
             r.minVAL = 0;
+        } else if (r.minVAL == Long.MAX_VALUE) {
+            r.minVAL = 0;
         }
+
         if (countTOP == 0) {
             r.minTOP = 0;
+        } else if (r.minTOP == Long.MAX_VALUE) {
+            r.minTOP = 0;
         }
+
         if (countPPT == 0) {
             r.minPPT = 0;
+        } else if (r.minPPT == Long.MAX_VALUE) {
+            r.minPPT = 0;
         }
+
         if (countRTT == 0) {
             r.minResponseTime = 0;
             r.maxResponseTime = 0;
+        } else {
+
+            if (r.minResponseTime == Long.MAX_VALUE) {
+                r.minResponseTime = 0;
+            }
+
+            if (r.maxResponseTime == Long.MIN_VALUE) {
+                r.maxResponseTime = 0;
+            }
         }
+
         if (countActiveSize == 0) {
             r.minActiveSize = 0;
             r.maxActiveSize = 0;

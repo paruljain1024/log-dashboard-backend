@@ -52,13 +52,29 @@ public class ProcessingStatusService {
         return isProcessing.get();
     }
 
-    public Map<String, Object> getStatus(double speed) {
+    public Map<String, Object> getStatus(
+            double speed,
+            double processedGB,
+            double totalGB,
+            long etaSeconds
+    ) {
+
         Map<String, Object> map = new HashMap<>();
 
         map.put("status", status);
+
         map.put("progress", progress);
+
         map.put("speed", speed);
+
+        map.put("processedGB", processedGB);
+
+        map.put("totalGB", totalGB);
+
+        map.put("etaSeconds", etaSeconds);
+
         map.put("startTime", startTime);
+
         map.put("endTime", endTime);
 
         if (errorMessage != null) {

@@ -105,4 +105,36 @@ public class ProcessingStats {
 
         startTime = System.currentTimeMillis();
     }
+
+    public double getProcessedGB() {
+
+        return processedBytes.get()
+                / 1024.0
+                / 1024.0
+                / 1024.0;
+    }
+
+    public double getTotalGB() {
+
+        return totalBytes
+                / 1024.0
+                / 1024.0
+                / 1024.0;
+    }
+
+    public long getRemainingSeconds() {
+
+        double speed = getMBPerSecond();
+
+        if (speed <= 0) {
+            return 0;
+        }
+
+        double remainingMB =
+                (totalBytes - processedBytes.get())
+                        / 1024.0
+                        / 1024.0;
+
+        return (long)(remainingMB / speed);
+    }
 }

@@ -88,9 +88,20 @@ public class LogParserTask implements Runnable {
         }
 
         if (line.contains(DAILY_LOG_MARKER)) {
-            val = extractMetric(line, "[VAL:");
-            top = extractMetric(line, "[TOP:");
+
+            // 🔥 ONLY RC transactions for VAL/TOP
+            boolean isRC = line.contains("[STV:RC]");
+
+            if (isRC) {
+
+                val = extractMetric(line, "[VAL:");
+
+                top = extractMetric(line, "[TOP:");
+            }
+
+            // 🔥 RTT/PPT from all logs
             ppt = extractMetric(line, "[PPT:");
+
             rtt = extractMetric(line, "[RTT:");
         }
 

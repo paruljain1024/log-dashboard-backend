@@ -49,7 +49,14 @@ public class LogProcessingService {
 
             processLogs();
 
-            if (!"FAILED".equals(statusService.getStatus(0).get("status"))) {
+            if (!"FAILED".equals(
+                    statusService.getStatus(
+                            0,
+                            0,
+                            0,
+                            0
+                    ).get("status")
+            )) {
                 statusService.setCompleted();
             }
 
@@ -237,5 +244,17 @@ public class LogProcessingService {
 
     public double getProcessingSpeed() {
         return stats.getMBPerSecond();
+    }
+
+    public double getProcessedGB() {
+        return stats.getProcessedGB();
+    }
+
+    public double getTotalGB() {
+        return stats.getTotalGB();
+    }
+
+    public long getEtaSeconds() {
+        return stats.getRemainingSeconds();
     }
 }

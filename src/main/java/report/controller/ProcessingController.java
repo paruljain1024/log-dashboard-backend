@@ -67,9 +67,24 @@ public class ProcessingController {
     @GetMapping("/status")
     public Map<String, Object> getStatus() {
 
-        double speed = service.getProcessingSpeed();
+        double speed =
+                service.getProcessingSpeed();
 
-        return statusService.getStatus(speed);
+        double processedGB =
+                service.getProcessedGB();
+
+        double totalGB =
+                service.getTotalGB();
+
+        long etaSeconds =
+                service.getEtaSeconds();
+
+        return statusService.getStatus(
+                speed,
+                processedGB,
+                totalGB,
+                etaSeconds
+        );
     }
 
     @GetMapping("/check")

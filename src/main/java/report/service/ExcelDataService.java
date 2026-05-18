@@ -359,32 +359,36 @@ public class ExcelDataService {
             long received = 0;
             long success = 0;
 
-            // 🔥 TOTALS
             for (TypeStats s : r.typeStatsMap.values()) {
 
-                long actualReceived =
-                        s.requestReceived.get();
+                fired += s.totalRequests.get();
 
-                long actualFired =
-                        s.totalRequests.get();
-
-                // 🔥 FOR NON-COMVIVA:
-                // fired = received
-                long finalFired =
-                        isComviva
-                                ? actualFired
-                                : actualReceived;
-
-                fired += finalFired;
-
-                received += actualReceived;
+                received += s.requestReceived.get();
 
                 success += s.successCount.get();
             }
 
-            // 🔥 FORCE SAME VALUE
-            if(!isComviva){
-                fired = received;
+/* ===============================
+   RECHARGE ONLY
+=============================== */
+
+            TypeStats rechargeStats =
+                    r.typeStatsMap.get("EXRCTRF");
+
+            long rechargeFired = 0;
+            long rechargeReceived = 0;
+            long rechargeSuccess = 0;
+
+            if (rechargeStats != null) {
+
+                rechargeFired =
+                        rechargeStats.totalRequests.get();
+
+                rechargeReceived =
+                        rechargeStats.requestReceived.get();
+
+                rechargeSuccess =
+                        rechargeStats.successCount.get();
             }
 
             row = addRow(
@@ -506,7 +510,7 @@ public class ExcelDataService {
                     rRow,
                     col,
                     "Total Recharge Request fired",
-                    fired,
+                    rechargeFired,
                     borderStyle
             );
 
@@ -515,7 +519,7 @@ public class ExcelDataService {
                     rRow,
                     col,
                     "Total Recharge Response Received",
-                    received,
+                    rechargeReceived,
                     borderStyle
             );
 
@@ -524,7 +528,7 @@ public class ExcelDataService {
                     rRow,
                     col,
                     "Total Recharge Response FAIL",
-                    received - success,
+                    rechargeReceived - rechargeSuccess,
                     borderStyle
             );
 
@@ -533,7 +537,7 @@ public class ExcelDataService {
                     rRow,
                     col,
                     "Total Recharge Response Success",
-                    success,
+                    rechargeSuccess,
                     borderStyle
             );
 
@@ -735,6 +739,13 @@ public class ExcelDataService {
 
             for (var e : r.responseCodeMap.entrySet()) {
 
+                String code = e.getKey();
+
+                if ("200".equals(code)
+                        || "SUCCESS".equalsIgnoreCase(code)) {
+                    continue;
+                }
+
                 Row rr =
                         getRow.apply(rcStart++, col);
 
@@ -857,14 +868,46 @@ public class ExcelDataService {
         return row + 1;
     }
 
-    private void addPerf(Sheet sheet, int row, int col, String type, double avg, long min, long max, CellStyle style) {
+    private void addPerf(
+            Sheet sheet,
+            int row,
+            int col,
+            String type,
+            double avg,
+            long min,
+            long max,
+            CellStyle style) {
+
         Row r = sheet.getRow(row);
-        if (r == null) r = sheet.createRow(row);
+
+        if (r == null)
+            r = sheet.createRow(row);
 
         createCell(r, col, type, style);
-        createCell(r, col + 1, avg, style);
-        createCell(r, col + 2, min, style);
-        createCell(r, col + 3, max, style);
+
+        double roundedAvg =
+                Math.round(avg * 100.0) / 100.0;
+
+        createCell(
+                r,
+                col + 1,
+                roundedAvg,
+                style
+        );
+
+        createCell(
+                r,
+                col + 2,
+                min,
+                style
+        );
+
+        createCell(
+                r,
+                col + 3,
+                max,
+                style
+        );
     }
 
     private void addBucket(Sheet sheet, int row, int col, String type, long[] values, CellStyle style) {
