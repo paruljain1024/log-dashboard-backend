@@ -24,6 +24,7 @@ report\controller\ExcelController.class
 report\metrics\ProcessingStats.class
 report\controller\DashboardMetricsController.class
 report\controller\MetricsController.class
+report\service\LogProcessingService$ChunkPlan.class
 report\dto\FilteredChartPoint.class
 report\service\BackupService.class
 report\service\ConfigLoader.class
@@ -33,6 +34,7 @@ report\service\LogProcessingService.class
 report\metrics\SecondMetricStats.class
 report\service\ExcelDataService.class
 report\metrics\MetricsCalculator.class
+report\service\LogProcessingService$ChunkResult.class
 report\model\LogEntry.class
 report\controller\FilterController.class
 report\model\RequestStats.class

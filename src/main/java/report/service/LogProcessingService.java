@@ -8,14 +8,20 @@ import report.metrics.ProcessingStats;
 import report.parser.LogParserTask;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.PriorityQueue;
+import java.util.concurrent.CompletionService;
+import java.util.concurrent.ExecutorCompletionService;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 public class LogProcessingService {
+    private static final long CHUNK_SIZE_BYTES = 512L * 1024L * 1024L;
+
     private final MetricsStorageService storage;
     private final ProcessingStatusService statusService;
     private final BackupService backupService;
@@ -38,7 +44,6 @@ public class LogProcessingService {
     @Async
     public void processLogsAsync() {
 
-        // 🔥 block if already processing
         if (!statusService.tryStart()) {
             System.out.println("Already processing - request ignored");
             return;
@@ -83,7 +88,6 @@ public class LogProcessingService {
     }
 
     public void processLogs() throws Exception {
-
         stats.reset();
 
         List<File> logFiles =
@@ -113,98 +117,36 @@ public class LogProcessingService {
         ExecutorService executor =
                 Executors.newFixedThreadPool(threads);
 
-        AtomicInteger processedFiles =
-                new AtomicInteger(0);
+        CompletionService<ChunkResult> completionService =
+                new ExecutorCompletionService<>(executor);
 
-        int totalFiles = logFiles.size();
+        List<ChunkPlan> chunkPlans = buildChunkPlans(logFiles);
+        int totalChunks = chunkPlans.size();
 
-        System.out.println(
-                "TOTAL FILES: " + totalFiles
-        );
-
-        System.out.println(
-                "TOTAL THREADS: " + threads
-        );
-
-        for (File file : logFiles) {
-
-            System.out.println(
-                    "SUBMITTING: " + file.getName()
-            );
-
-            executor.submit(() -> {
-
+        for (ChunkPlan chunkPlan : chunkPlans) {
+            completionService.submit(() -> {
                 MetricsCalculator localCalculator =
                         new MetricsCalculator();
 
-                try {
+                new LogParserTask(
+                        chunkPlan.file(),
+                        localCalculator,
+                        stats,
+                        chunkPlan.startOffset(),
+                        chunkPlan.endOffset()
+                ).run();
 
-                    System.out.println(
-                            "THREAD STARTED: "
-                                    + file.getName()
-                    );
-
-                    new LogParserTask(
-                            file,
-                            localCalculator,
-                            stats
-                    ).run();
-
-                    System.out.println(
-                            "PARSING FINISHED: "
-                                    + file.getName()
-                    );
-
-                    synchronized (globalCalculator) {
-
-                        System.out.println(
-                                "MERGING STARTED: "
-                                        + file.getName()
-                        );
-
-                        globalCalculator.merge(localCalculator);
-
-                        System.out.println(
-                                "MERGING COMPLETED: "
-                                        + file.getName()
-                        );
-                    }
-
-                } catch (Exception e) {
-
-                    System.out.println(
-                            "ERROR IN FILE: "
-                                    + file.getName()
-                    );
-
-                    e.printStackTrace();
-
-                } finally {
-
-                    int done =
-                            processedFiles.incrementAndGet();
-
-                    System.out.println(
-                            "THREAD FINISHED: "
-                                    + file.getName()
-                                    + " | DONE = "
-                                    + done
-                                    + "/"
-                                    + totalFiles
-                    );
-
-                    statusService.updateProgress(
-                            stats.getProgressPercent()
-                    );
-                }
+                return new ChunkResult(chunkPlan.order(), localCalculator);
             });
         }
 
-        System.out.println("ALL TASKS SUBMITTED");
+        mergeCompletedChunks(
+                completionService,
+                totalChunks,
+                globalCalculator
+        );
 
         executor.shutdown();
-
-        System.out.println("WAITING FOR THREADS...");
 
         boolean finished =
                 executor.awaitTermination(
@@ -212,34 +154,86 @@ public class LogProcessingService {
                         TimeUnit.HOURS
                 );
 
-        System.out.println(
-                "THREAD WAIT RESULT: " + finished
-        );
-
-        System.out.println("ALL THREADS FINISHED");
+        if (!finished) {
+            throw new IllegalStateException("Log processing did not finish within the configured timeout");
+        }
 
         MetricsResult result =
                 globalCalculator.getResult();
 
-        System.out.println(
-                "SAVING PROCESSING RESULT..."
-        );
-
         storage.setProcessingResult(result);
-
-        System.out.println(
-                "PROCESSING RESULT SAVED"
-        );
-
-        System.out.println(
-                "PROMOTION STARTED"
-        );
-
         storage.promoteProcessingToActive();
+    }
 
-        System.out.println(
-                "PROMOTION COMPLETED"
-        );
+    private List<ChunkPlan> buildChunkPlans(List<File> logFiles) {
+        List<ChunkPlan> plans = new ArrayList<>();
+        int order = 0;
+
+        for (File file : logFiles) {
+            long fileSize = file.length();
+
+            if (fileSize <= CHUNK_SIZE_BYTES) {
+                plans.add(new ChunkPlan(
+                        order++,
+                        file,
+                        0L,
+                        fileSize
+                ));
+                continue;
+            }
+
+            for (long start = 0L; start < fileSize; start += CHUNK_SIZE_BYTES) {
+                long end = Math.min(fileSize, start + CHUNK_SIZE_BYTES);
+                plans.add(new ChunkPlan(
+                        order++,
+                        file,
+                        start,
+                        end
+                ));
+            }
+        }
+
+        return plans;
+    }
+
+    private void mergeCompletedChunks(
+            CompletionService<ChunkResult> completionService,
+            int totalChunks,
+            MetricsCalculator globalCalculator
+    ) throws Exception {
+        PriorityQueue<ChunkResult> ready =
+                new PriorityQueue<>(Comparator.comparingInt(ChunkResult::order));
+
+        int nextOrder = 0;
+
+        for (int i = 0; i < totalChunks; i++) {
+            ChunkResult completed = completionService.take().get();
+            ready.add(completed);
+
+            while (!ready.isEmpty() && ready.peek().order() == nextOrder) {
+                ChunkResult result = ready.poll();
+                globalCalculator.merge(result.calculator());
+                nextOrder++;
+            }
+
+            statusService.updateProgress(
+                    stats.getProgressPercent()
+            );
+        }
+    }
+
+    private record ChunkPlan(
+            int order,
+            File file,
+            long startOffset,
+            long endOffset
+    ) {
+    }
+
+    private record ChunkResult(
+            int order,
+            MetricsCalculator calculator
+    ) {
     }
 
     public double getProcessingSpeed() {

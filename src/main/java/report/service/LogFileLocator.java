@@ -5,6 +5,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -20,20 +21,11 @@ public class LogFileLocator {
         File baseDir = new File(baseLogDir);
 
         if (!baseDir.exists() || !baseDir.isDirectory()) {
-
-            System.out.println("❌ Base log directory not found: " + baseLogDir);
-
             return logFiles;
         }
 
-        System.out.println("🔍 Scanning base directory: "
-                + baseDir.getAbsolutePath());
-
         scanRecursively(baseDir, logFiles);
-
-        System.out.println("✅ Total log files discovered: "
-                + logFiles.size());
-
+        logFiles.sort(Comparator.comparing(File::getAbsolutePath));
         return logFiles;
     }
 
@@ -44,14 +36,14 @@ public class LogFileLocator {
 
         File[] files = dir.listFiles();
 
-        if (files == null) return;
+        if (files == null) {
+            return;
+        }
 
         for (File f : files) {
 
             if (f.isDirectory()) {
-
                 scanRecursively(f, logFiles);
-
             } else {
 
                 String name =
@@ -61,11 +53,6 @@ public class LogFileLocator {
                         || name.contains("channelrequestdailylog")
                         || name.contains("pretups_out")
                         || name.contains("web_pretups_out")) {
-
-                    System.out.println(
-                            "✅ Found log file: "
-                                    + f.getAbsolutePath());
-
                     logFiles.add(f);
                 }
             }

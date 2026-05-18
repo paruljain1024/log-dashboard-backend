@@ -1,8 +1,8 @@
 package report.metrics;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class MetricsCalculator {
 
@@ -31,10 +31,14 @@ public class MetricsCalculator {
 
         if (reqIn && type != null) {
             r.requestInPerSec.merge(secondKey, 1, Integer::sum);
-            r.typeStatsMap
-                    .computeIfAbsent(type, key -> new TypeStats())
-                    .totalRequests
-                    .incrementAndGet();
+
+            TypeStats typeStats = r.typeStatsMap
+                    .computeIfAbsent(type, key -> new TypeStats());
+
+            typeStats.totalRequests.incrementAndGet();
+            r.typeRequestInPerSec
+                    .computeIfAbsent(type, key -> new HashMap<>())
+                    .merge(secondKey, 1L, Long::sum);
         }
 
         if (reqOut && type != null) {
@@ -59,6 +63,10 @@ public class MetricsCalculator {
             } else {
                 r.failurePerSec.merge(secondKey, 1, Integer::sum);
             }
+
+            r.typeRequestOutPerSec
+                    .computeIfAbsent(type, key -> new HashMap<>())
+                    .merge(secondKey, 1L, Long::sum);
         }
 
         if (activeSize != null) {
@@ -96,7 +104,7 @@ public class MetricsCalculator {
                     .add(top);
         }
 
-        if (ppt != null && ppt>0) {
+        if (ppt != null && ppt > 0) {
             sumPPT += ppt;
             countPPT++;
             r.avgPPT = (double) sumPPT / countPPT;
@@ -108,7 +116,7 @@ public class MetricsCalculator {
                     .add(ppt);
         }
 
-        if (rtt != null && rtt>0) {
+        if (rtt != null && rtt > 0) {
             sumRTT += rtt;
             countRTT++;
             r.avgResponseTime = (double) sumRTT / countRTT;
@@ -121,37 +129,9 @@ public class MetricsCalculator {
         }
     }
 
-    public void updateTypeTimeSeries(
-            LocalDateTime time,
-            String type,
-            boolean reqIn,
-            boolean reqOut
-    ) {
-
-        if (type == null) return;
-
-        long timestamp = time.toEpochSecond(java.time.ZoneOffset.UTC);
-
-        if (reqIn) {
-            r.typeRequestInPerSec
-                    .computeIfAbsent(type, k -> new ConcurrentHashMap<>())
-                    .merge(timestamp, 1L, Long::sum);
-        }
-
-        if (reqOut) {
-            r.typeRequestOutPerSec
-                    .computeIfAbsent(type, k -> new ConcurrentHashMap<>())
-                    .merge(timestamp, 1L, Long::sum);
-        }
-    }
-
     public MetricsResult getResult() {
         return r;
     }
-
-    /* ===============================
-        🔥 MERGE (CRITICAL FIX)
-    =============================== */
 
     public synchronized void merge(MetricsCalculator other) {
 
@@ -160,19 +140,18 @@ public class MetricsCalculator {
         other.recomputeDerivedFields();
 
         o.requestInPerSec.forEach(
-                (k,v) -> r.requestInPerSec.merge(k,v,Integer::sum));
+                (k, v) -> r.requestInPerSec.merge(k, v, Integer::sum));
 
         o.requestOutPerSec.forEach(
-                (k,v) -> r.requestOutPerSec.merge(k,v,Integer::sum));
+                (k, v) -> r.requestOutPerSec.merge(k, v, Integer::sum));
 
         o.successPerSec.forEach(
-                (k,v) -> r.successPerSec.merge(k,v,Integer::sum));
+                (k, v) -> r.successPerSec.merge(k, v, Integer::sum));
 
         o.failurePerSec.forEach(
-                (k,v) -> r.failurePerSec.merge(k,v,Integer::sum));
+                (k, v) -> r.failurePerSec.merge(k, v, Integer::sum));
 
-        o.activeSizePerSec.forEach(
-                (k,v) -> r.activeSizePerSec.put(k,v));
+        o.activeSizePerSec.forEach(r.activeSizePerSec::put);
 
         mergeStats(r.valPerSec, o.valPerSec);
         mergeStats(r.topPerSec, o.topPerSec);
@@ -225,8 +204,7 @@ public class MetricsCalculator {
             r.minResponseTime =
                     (r.minResponseTime == Long.MAX_VALUE)
                             ? o.minResponseTime
-                            : Math.min(r.minResponseTime,
-                            o.minResponseTime);
+                            : Math.min(r.minResponseTime, o.minResponseTime);
         }
         r.maxResponseTime = Math.max(r.maxResponseTime, o.maxResponseTime);
         r.minActiveSize = Math.min(r.minActiveSize, o.minActiveSize);
@@ -238,7 +216,7 @@ public class MetricsCalculator {
     private void mergeStats(Map<Long, SecondMetricStats> base,
                             Map<Long, SecondMetricStats> other) {
 
-        other.forEach((k,v) -> {
+        other.forEach((k, v) -> {
             base.computeIfAbsent(k, x -> new SecondMetricStats())
                     .merge(v);
         });
@@ -250,7 +228,7 @@ public class MetricsCalculator {
 
         other.forEach((type, map) -> {
 
-            base.computeIfAbsent(type, t -> new ConcurrentHashMap<>());
+            base.computeIfAbsent(type, t -> new HashMap<>());
 
             map.forEach((ts, val) -> {
                 base.get(type).merge(ts, val, Long::sum);
@@ -325,8 +303,6 @@ public class MetricsCalculator {
                 countActiveSize == 0
                         ? 0
                         : (double) totalActiveSize / countActiveSize;
-
-        // 🔥 FIX MIN VALUES
 
         if (countVAL == 0) {
             r.minVAL = 0;

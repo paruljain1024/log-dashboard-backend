@@ -6,22 +6,19 @@
   <component name="ChangeListManager">
     <list default="true" id="9a099b1c-5998-4bc7-baf1-8d19bdb5373d" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/report/controller/ProcessingController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/controller/ProcessingController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsCalculator.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/report/metrics/ProcessingStats.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/metrics/ProcessingStats.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsResult.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/parser/LogParserTask.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/parser/LogParserTask.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/ExcelDataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/ExcelDataService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/LogFileLocator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/LogFileLocator.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/service/LogProcessingService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/LogProcessingService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/ProcessingStatusService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/ProcessingStatusService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/controller/ProcessingController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/controller/ProcessingController.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/report/metrics/MetricsCalculator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/metrics/MetricsCalculator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/metrics/ProcessingStats.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/metrics/ProcessingStats.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/metrics/MetricsResult.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/metrics/MetricsResult.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/report/parser/LogParserTask.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/parser/LogParserTask.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/service/ExcelDataService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/ExcelDataService.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/report/service/LogFileLocator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/LogFileLocator.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/classes/report/service/LogProcessingService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/LogProcessingService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/service/ProcessingStatusService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/ProcessingStatusService.class" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/log-dashboard-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/log-dashboard-1.0.jar" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/target/log-dashboard-1.0.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/log-dashboard-1.0.jar.original" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" beforeDir="false" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

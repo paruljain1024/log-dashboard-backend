@@ -3,9 +3,12 @@ package report.parser;
 import report.metrics.MetricsCalculator;
 import report.metrics.ProcessingStats;
 
-import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileReader;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
@@ -27,35 +30,162 @@ public class LogParserTask implements Runnable {
     private final ProcessingStats stats;
     private final File logFile;
     private final MetricsCalculator calculator;
+    private final long startOffset;
+    private final long endOffset;
 
     public LogParserTask(File logFile,
                          MetricsCalculator calculator,
                          ProcessingStats stats) {
+        this(logFile, calculator, stats, 0L, logFile.length());
+    }
 
+    public LogParserTask(File logFile,
+                         MetricsCalculator calculator,
+                         ProcessingStats stats,
+                         long startOffset,
+                         long endOffset) {
         this.logFile = logFile;
         this.calculator = calculator;
         this.stats = stats;
+        this.startOffset = Math.max(0L, startOffset);
+        this.endOffset = Math.max(this.startOffset, endOffset);
     }
 
     @Override
     public void run() {
-        try (BufferedReader br = new BufferedReader(new FileReader(logFile), 1024 * 1024)) {
-            String line;
-            while ((line = br.readLine()) != null) {
-                processLine(line);
-                stats.addProcessedBytes(
-                        line.length()
-                );
+        try (FileChannel channel = FileChannel.open(
+                logFile.toPath(),
+                StandardOpenOption.READ
+        )) {
+            long alignedStart = resolveAlignedStart(channel);
+            if (alignedStart >= endOffset) {
+                return;
             }
 
-            System.out.println("Parsing completed: " + logFile.getName());
+            channel.position(alignedStart);
+            readChunk(channel, alignedStart);
         } catch (Exception e) {
             throw new RuntimeException("Failed to parse " + logFile.getAbsolutePath(), e);
         }
     }
 
+    private long resolveAlignedStart(FileChannel channel) throws Exception {
+        if (startOffset <= 0L) {
+            return 0L;
+        }
+
+        long scanPosition = startOffset - 1L;
+        channel.position(scanPosition);
+
+        ByteBuffer scanBuffer = ByteBuffer.allocate(8192);
+
+        while (true) {
+            scanBuffer.clear();
+            int read = channel.read(scanBuffer);
+
+            if (read < 0) {
+                return channel.size();
+            }
+
+            scanBuffer.flip();
+
+            for (int i = 0; i < read; i++) {
+                if (scanBuffer.get(i) == '\n') {
+                    return scanPosition + i + 1L;
+                }
+            }
+
+            scanPosition += read;
+        }
+    }
+
+    private void readChunk(FileChannel channel, long alignedStart) throws Exception {
+        ByteBuffer byteBuffer = ByteBuffer.allocate(1024 * 1024);
+        ByteArrayOutputStream lineBuffer = new ByteArrayOutputStream(4096);
+
+        long filePointer = alignedStart;
+        long lineStart = alignedStart;
+
+        while (true) {
+            byteBuffer.clear();
+            int read = channel.read(byteBuffer);
+
+            if (read < 0) {
+                break;
+            }
+
+            if (read == 0) {
+                continue;
+            }
+
+            byteBuffer.flip();
+
+            int segmentStart = 0;
+
+            for (int i = 0; i < read; i++) {
+                if (byteBuffer.get(i) != '\n') {
+                    continue;
+                }
+
+                int segmentLength = i - segmentStart;
+                if (segmentLength > 0) {
+                    lineBuffer.write(byteBuffer.array(), segmentStart, segmentLength);
+                }
+
+                filePointer += (i - segmentStart) + 1L;
+
+                if (lineStart < endOffset) {
+                    processLine(decodeLine(lineBuffer));
+                    stats.addProcessedBytes(filePointer - lineStart);
+                }
+
+                lineBuffer.reset();
+                lineStart = filePointer;
+                segmentStart = i + 1;
+
+                if (lineStart >= endOffset) {
+                    return;
+                }
+            }
+
+            int remaining = read - segmentStart;
+            if (remaining > 0) {
+                lineBuffer.write(byteBuffer.array(), segmentStart, remaining);
+                filePointer += remaining;
+            }
+        }
+
+        if (lineBuffer.size() > 0 && lineStart < endOffset) {
+            processLine(decodeLine(lineBuffer));
+            stats.addProcessedBytes(filePointer - lineStart);
+        }
+    }
+
+    private String decodeLine(ByteArrayOutputStream lineBuffer) {
+        byte[] bytes = lineBuffer.toByteArray();
+        int length = bytes.length;
+
+        if (length > 0 && bytes[length - 1] == '\r') {
+            length--;
+        }
+
+        return new String(bytes, 0, length, StandardCharsets.UTF_8);
+    }
+
     private void processLine(String line) {
         stats.increment();
+
+        int reqInIndex = line.indexOf(REQ_IN_MARKER);
+        int reqOutIndex = line.indexOf(REQ_OUT_MARKER);
+        int dailyLogIndex = line.indexOf(DAILY_LOG_MARKER);
+
+        int activeSizeIndex = -1;
+        if (reqInIndex < 0 && reqOutIndex < 0 && dailyLogIndex < 0) {
+            activeSizeIndex = indexOfIgnoreCase(line, ACTIVE_SIZE_MARKER);
+            if (activeSizeIndex < 0) {
+                return;
+            }
+        }
 
         LocalDateTime time = parseTime(line);
         if (time == null) {
@@ -72,41 +202,29 @@ public class LogParserTask implements Runnable {
         Long ppt = null;
         Long rtt = null;
 
-        if (line.contains(REQ_IN_MARKER)) {
+        if (reqInIndex >= 0) {
             reqIn = true;
-            String rawType = extractTagValue(line, TYPE_OPEN, TYPE_CLOSE);
-            if (rawType != null) {
-                type = normalizeType(rawType);
-            }
-        } else if (line.contains(REQ_OUT_MARKER)) {
+            type = normalizeType(extractTagValue(line, TYPE_OPEN, TYPE_CLOSE));
+        } else if (reqOutIndex >= 0) {
             reqOut = true;
-            String rawType = extractTagValue(line, TYPE_OPEN, TYPE_CLOSE);
-            if (rawType != null) {
-                type = normalizeType(rawType);
-            }
+            type = normalizeType(extractTagValue(line, TYPE_OPEN, TYPE_CLOSE));
             txnStatus = extractTagValue(line, STATUS_OPEN, STATUS_CLOSE);
         }
 
-        if (line.contains(DAILY_LOG_MARKER)) {
-
-            // 🔥 ONLY RC transactions for VAL/TOP
+        if (dailyLogIndex >= 0) {
             boolean isRC = line.contains("[STV:RC]");
 
             if (isRC) {
-
                 val = extractMetric(line, "[VAL:");
-
                 top = extractMetric(line, "[TOP:");
             }
 
-            // 🔥 RTT/PPT from all logs
             ppt = extractMetric(line, "[PPT:");
-
             rtt = extractMetric(line, "[RTT:");
         }
 
-        if (containsIgnoreCase(line, ACTIVE_SIZE_MARKER)) {
-            activeSize = extractActiveSize(line);
+        if (activeSizeIndex >= 0) {
+            activeSize = extractActiveSize(line, activeSizeIndex);
         }
 
         if (reqIn || reqOut || activeSize != null ||
@@ -116,10 +234,6 @@ public class LogParserTask implements Runnable {
                     time, reqIn, reqOut, type, txnStatus,
                     activeSize, val, top, ppt, rtt
             );
-
-            if (type != null) {
-                calculator.updateTypeTimeSeries(time, type, reqIn, reqOut);
-            }
         }
     }
 
@@ -170,12 +284,7 @@ public class LogParserTask implements Runnable {
         return line.substring(start, end);
     }
 
-    private Long extractActiveSize(String line) {
-        int markerIndex = indexOfIgnoreCase(line, ACTIVE_SIZE_MARKER);
-        if (markerIndex < 0) {
-            return null;
-        }
-
+    private Long extractActiveSize(String line, int markerIndex) {
         int start = markerIndex + ACTIVE_SIZE_MARKER.length();
         while (start < line.length()) {
             char ch = line.charAt(start);
@@ -204,10 +313,6 @@ public class LogParserTask implements Runnable {
         }
     }
 
-    private boolean containsIgnoreCase(String line, String needle) {
-        return indexOfIgnoreCase(line, needle) >= 0;
-    }
-
     private int indexOfIgnoreCase(String line, String needle) {
         int max = line.length() - needle.length();
         for (int i = 0; i <= max; i++) {
@@ -219,6 +324,9 @@ public class LogParserTask implements Runnable {
     }
 
     private String normalizeType(String raw) {
+        if (raw == null) {
+            return null;
+        }
         if (raw.endsWith("REQ")) {
             return raw.substring(0, raw.length() - 3);
         }
@@ -258,7 +366,6 @@ public class LogParserTask implements Runnable {
                             line.substring(start, end)
                     );
 
-            // 🔥 FILTER INVALID HUGE TIMINGS
             if (value < 0 || value > 100000) {
                 return null;
             }
