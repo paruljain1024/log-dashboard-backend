@@ -7,56 +7,49 @@ import report.metrics.SecondMetricStats;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 @Service
 public class ChartDataService {
 
     private final MetricsStorageService storage;
+    private final TypeNameMapper typeNameMapper;
 
-    public ChartDataService(MetricsStorageService storage) {
+    public ChartDataService(
+            MetricsStorageService storage,
+            TypeNameMapper typeNameMapper
+    ) {
         this.storage = storage;
+        this.typeNameMapper = typeNameMapper;
     }
-
-    /* ===============================
-        GET NORMAL METRICS
-    =============================== */
 
     public List<ChartPoint> getMetric(String metric) {
 
         MetricsResult r = storage.get();
 
         switch (metric.toLowerCase()) {
-
             case "request-in":
                 return convert(r.requestInPerSec);
-
             case "request-out":
                 return convert(r.requestOutPerSec);
-
             case "active-size":
                 return convert(r.activeSizePerSec);
-
             case "val":
                 return convertStats(r.valPerSec);
-
             case "ppt":
                 return convertStats(r.pptPerSec);
-
             case "rtt":
                 return convertStats(r.rttPerSec);
-
             case "top":
                 return convertStats(r.topPerSec);
-
             default:
                 throw new RuntimeException("Unknown metric");
         }
     }
-
-    /* ===============================
-        NUMERIC CONVERSION
-    =============================== */
 
     private List<ChartPoint> convert(
             Map<Long, ? extends Number> source) {
@@ -79,10 +72,6 @@ public class ChartDataService {
         return result;
     }
 
-    /* ===============================
-        STATS CONVERSION
-    =============================== */
-
     private List<ChartPoint> convertStats(
             Map<Long, SecondMetricStats> source) {
 
@@ -92,7 +81,9 @@ public class ChartDataService {
 
             var s = e.getValue();
 
-            if (s.getCount() == 0) continue;
+            if (s.getCount() == 0) {
+                continue;
+            }
 
             LocalDateTime dt = toDateTime(e.getKey());
 
@@ -110,10 +101,6 @@ public class ChartDataService {
         return result;
     }
 
-    /* ===============================
-        CUSTOM FILTER (USED LESS NOW)
-    =============================== */
-
     public List<ChartPoint> getCustomMetric(
             String metric,
             String date,
@@ -125,36 +112,24 @@ public class ChartDataService {
         MetricsResult r = storage.get();
 
         switch (metric.toLowerCase()) {
-
             case "request-in":
                 return filterNumeric(r.requestInPerSec, date, from, to, interval);
-
             case "request-out":
                 return filterNumeric(r.requestOutPerSec, date, from, to, interval);
-
             case "active-size":
                 return filterNumeric(r.activeSizePerSec, date, from, to, interval);
-
             case "val":
                 return filterStats(r.valPerSec, date, from, to, interval);
-
             case "ppt":
                 return filterStats(r.pptPerSec, date, from, to, interval);
-
             case "rtt":
                 return filterStats(r.rttPerSec, date, from, to, interval);
-
             case "top":
                 return filterStats(r.topPerSec, date, from, to, interval);
-
             default:
                 throw new RuntimeException("Unknown metric");
         }
     }
-
-    /* ===============================
-        FILTER NUMERIC
-    =============================== */
 
     private List<ChartPoint> filterNumeric(
             Map<Long, ? extends Number> source,
@@ -172,7 +147,9 @@ public class ChartDataService {
 
             LocalDateTime dt = toDateTime(e.getKey());
 
-            if (!match(dt, date, from, to)) continue;
+            if (!match(dt, date, from, to)) {
+                continue;
+            }
 
             sum += e.getValue().doubleValue();
             counter++;
@@ -193,10 +170,6 @@ public class ChartDataService {
         return result;
     }
 
-    /* ===============================
-        FILTER STATS
-    =============================== */
-
     private List<ChartPoint> filterStats(
             Map<Long, SecondMetricStats> source,
             String date,
@@ -216,13 +189,13 @@ public class ChartDataService {
             LocalDateTime dt = toDateTime(e.getKey());
             var s = e.getValue();
 
-            if (!match(dt, date, from, to)) continue;
-            if (s.getCount() == 0) continue;
+            if (!match(dt, date, from, to) || s.getCount() == 0) {
+                continue;
+            }
 
             min = Math.min(min, s.getMin());
             max = Math.max(max, s.getMax());
             sum += s.getAvg();
-
             counter++;
 
             if (counter == interval) {
@@ -245,10 +218,6 @@ public class ChartDataService {
         return result;
     }
 
-    /* ===============================
-        MATCH FILTER
-    =============================== */
-
     private boolean match(
             LocalDateTime dt,
             String date,
@@ -258,35 +227,45 @@ public class ChartDataService {
         String d = dt.toLocalDate().toString();
         String t = dt.toLocalTime().toString();
 
-        if (date != null && !date.equals(d))
+        if (date != null && !date.equals(d)) {
             return false;
+        }
 
-        if (from != null && t.compareTo(from) < 0)
+        if (from != null && t.compareTo(from) < 0) {
             return false;
+        }
 
-        if (to != null && t.compareTo(to) > 0)
+        if (to != null && t.compareTo(to) > 0) {
             return false;
+        }
 
         return true;
     }
-
-    /* ===============================
-        TYPEWISE RAW DATA
-    =============================== */
 
     public Map<String, Object> getTypewiseTimeSeries() {
 
         MetricsResult r = storage.get();
 
         return Map.of(
-                "requestIn", r.typeRequestInPerSec,
-                "requestOut", r.typeRequestOutPerSec
+                "requestIn", remapTypeSeries(r.typeRequestInPerSec),
+                "requestOut", remapTypeSeries(r.typeRequestOutPerSec)
         );
     }
 
-    /* ===============================
-        UTILITY
-    =============================== */
+    private Map<String, Map<Long, Long>> remapTypeSeries(
+            Map<String, Map<Long, Long>> source
+    ) {
+        Map<String, Map<Long, Long>> result = new LinkedHashMap<>();
+
+        source.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey())
+                .forEach(entry -> result.put(
+                        typeNameMapper.getDisplayName(entry.getKey()),
+                        entry.getValue()
+                ));
+
+        return result;
+    }
 
     private LocalDateTime toDateTime(long ts) {
         return LocalDateTime.ofEpochSecond(ts, 0, ZoneOffset.UTC);

@@ -21,9 +21,13 @@ import java.util.function.BiFunction;
 public class ExcelDataService {
 
     private final MetricsStorageService storage;
+    private final TypeNameMapper typeNameMapper;
 
-    public ExcelDataService(MetricsStorageService storage) {
+    public ExcelDataService(
+            MetricsStorageService storage,
+            TypeNameMapper typeNameMapper) {
         this.storage = storage;
+        this.typeNameMapper = typeNameMapper;
     }
 
     private MetricsResult getResult() {
@@ -76,7 +80,7 @@ public class ExcelDataService {
             TypeStats s = e.getValue();
 
             list.add(Map.of(
-                    "type", e.getKey(),
+                    "type", typeNameMapper.getDisplayName(e.getKey()),
                     "requestsFired", s.totalRequests.get(),
                     "received", s.requestReceived.get(),
                     "success", s.successCount.get()
@@ -434,7 +438,7 @@ public class ExcelDataService {
                 createCell(
                         sec,
                         0,
-                        e.getKey(),
+                        typeNameMapper.getDisplayName(e.getKey()),
                         sectionStyle
                 );
 

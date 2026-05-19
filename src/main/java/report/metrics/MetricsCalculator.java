@@ -181,34 +181,39 @@ public class MetricsCalculator {
         mergeBuckets(r.pptBuckets, o.pptBuckets);
         mergeBuckets(r.rttBuckets, o.rttBuckets);
 
-        if (o.minVAL > 0) {
-            r.minVAL = (r.minVAL == Long.MAX_VALUE)
+        if (other.countVAL > 0) {
+            r.minVAL = (r.minVAL <= 0 || r.minVAL == Long.MAX_VALUE)
                     ? o.minVAL
                     : Math.min(r.minVAL, o.minVAL);
         }
         r.peakVAL = Math.max(r.peakVAL, o.peakVAL);
-        if (o.minTOP > 0) {
-            r.minTOP = (r.minTOP == Long.MAX_VALUE)
+        if (other.countTOP > 0) {
+            r.minTOP = (r.minTOP <= 0 || r.minTOP == Long.MAX_VALUE)
                     ? o.minTOP
                     : Math.min(r.minTOP, o.minTOP);
         }
 
         r.peakTOP = Math.max(r.peakTOP, o.peakTOP);
-        if (o.minPPT > 0) {
-            r.minPPT = (r.minPPT == Long.MAX_VALUE)
+        if (other.countPPT > 0) {
+            r.minPPT = (r.minPPT <= 0 || r.minPPT == Long.MAX_VALUE)
                     ? o.minPPT
                     : Math.min(r.minPPT, o.minPPT);
         }
         r.peakPPT = Math.max(r.peakPPT, o.peakPPT);
-        if (o.minResponseTime > 0) {
+        if (other.countRTT > 0) {
             r.minResponseTime =
-                    (r.minResponseTime == Long.MAX_VALUE)
+                    (r.minResponseTime <= 0 || r.minResponseTime == Long.MAX_VALUE)
                             ? o.minResponseTime
                             : Math.min(r.minResponseTime, o.minResponseTime);
         }
         r.maxResponseTime = Math.max(r.maxResponseTime, o.maxResponseTime);
-        r.minActiveSize = Math.min(r.minActiveSize, o.minActiveSize);
-        r.maxActiveSize = Math.max(r.maxActiveSize, o.maxActiveSize);
+        if (other.countActiveSize > 0) {
+            r.minActiveSize =
+                    (r.minActiveSize <= 0 || r.minActiveSize == Long.MAX_VALUE)
+                            ? o.minActiveSize
+                            : Math.min(r.minActiveSize, o.minActiveSize);
+            r.maxActiveSize = Math.max(r.maxActiveSize, o.maxActiveSize);
+        }
 
         recomputeDerivedFields();
     }
