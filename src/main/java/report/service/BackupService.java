@@ -3,7 +3,15 @@ package report.service;
 import org.springframework.stereotype.Service;
 import report.metrics.MetricsResult;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 @Service
 public class BackupService {
@@ -11,15 +19,9 @@ public class BackupService {
     private static final String BACKUP_FILE = "metrics_backup.bin";
     private static final String CHECKPOINT_FILE = "checkpoint.txt";
 
-    /* ===============================
-        SAVE BACKUP
-    =============================== */
-
     public void save(MetricsResult result, long lineNumber) {
 
         try {
-
-            // save metrics
             ObjectOutputStream out =
                     new ObjectOutputStream(
                             new FileOutputStream(BACKUP_FILE));
@@ -27,7 +29,6 @@ public class BackupService {
             out.writeObject(result);
             out.close();
 
-             // save checkpoint
             BufferedWriter writer =
                     new BufferedWriter(
                             new FileWriter(CHECKPOINT_FILE));
@@ -35,23 +36,21 @@ public class BackupService {
             writer.write(String.valueOf(lineNumber));
             writer.close();
 
-            System.out.println("💾 Backup saved at line: " + lineNumber);
+            System.out.println("Backup saved at line: " + lineNumber);
 
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    /* ===============================
-        LOAD BACKUP
-    =============================== */
-
     public MetricsResult loadMetrics() {
 
         try {
             File file = new File(BACKUP_FILE);
 
-            if (!file.exists()) return null;
+            if (!file.exists()) {
+                return null;
+            }
 
             ObjectInputStream in =
                     new ObjectInputStream(
@@ -62,7 +61,7 @@ public class BackupService {
 
             in.close();
 
-            System.out.println("✅ Backup loaded");
+            System.out.println("Backup loaded");
 
             return result;
 
@@ -72,16 +71,14 @@ public class BackupService {
         }
     }
 
-    /* ===============================
-        LOAD CHECKPOINT
-    =============================== */
-
     public long loadCheckpoint() {
 
         try {
             File file = new File(CHECKPOINT_FILE);
 
-            if (!file.exists()) return 0;
+            if (!file.exists()) {
+                return 0;
+            }
 
             BufferedReader reader =
                     new BufferedReader(
@@ -91,7 +88,7 @@ public class BackupService {
 
             reader.close();
 
-            System.out.println("📍 Resume from line: " + line);
+            System.out.println("Resume from line: " + line);
 
             return line;
 
@@ -101,13 +98,9 @@ public class BackupService {
         }
     }
 
-    /* ===============================
-        CLEAR BACKUP (OPTIONAL)
-    =============================== */
-
     public void clear() {
         new File(BACKUP_FILE).delete();
         new File(CHECKPOINT_FILE).delete();
-        System.out.println("🗑 Backup cleared");
+        System.out.println("Backup cleared");
     }
 }

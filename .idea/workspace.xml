@@ -5,22 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="9a099b1c-5998-4bc7-baf1-8d19bdb5373d" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/config/CorsConfig.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/config/CorsConfig.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/controller/ChartApiController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/controller/ChartApiController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/controller/DashboardMetricsController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/controller/DashboardMetricsController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/controller/FilterController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/controller/FilterController.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsCalculator.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsCalculator.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsResult.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/metrics/MetricsResult.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/BackupService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/BackupService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/service/ChartDataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/ChartDataService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/ExcelDataService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/ExcelDataService.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/report/service/MetricsFilterService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/MetricsFilterService.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/report/service/TypeNameMapper.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/report/service/TypeNameMapper.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/application.properties" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/application.properties" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/controller/FilterController$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/controller/FilterController$1.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/controller/FilterController.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/controller/FilterController.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/metrics/MetricsCalculator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/metrics/MetricsCalculator.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/service/ChartDataService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/ChartDataService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/service/ExcelDataService.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/ExcelDataService.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/classes/report/service/TypeNameMapper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/report/service/TypeNameMapper.class" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/log-dashboard-1.0.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/log-dashboard-1.0.jar" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/target/log-dashboard-1.0.jar.original" beforeDir="false" afterPath="$PROJECT_DIR$/target/log-dashboard-1.0.jar.original" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

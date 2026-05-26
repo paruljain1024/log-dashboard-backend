@@ -37,7 +37,7 @@ public class ChartDataService {
             case "request-out":
                 return convert(r.requestOutPerSec);
             case "active-size":
-                return convert(r.activeSizePerSec);
+                return convertStats(r.activeSizePerSec);
             case "val":
                 return convertStats(r.valPerSec);
             case "ppt":
@@ -117,7 +117,7 @@ public class ChartDataService {
             case "request-out":
                 return filterNumeric(r.requestOutPerSec, date, from, to, interval);
             case "active-size":
-                return filterNumeric(r.activeSizePerSec, date, from, to, interval);
+                return filterStats(r.activeSizePerSec, date, from, to, interval);
             case "val":
                 return filterStats(r.valPerSec, date, from, to, interval);
             case "ppt":

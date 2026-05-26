@@ -76,7 +76,7 @@ public class DashboardMetricsController {
     }
 
     @GetMapping("/active-size")
-    public Map<String, Long> activeSize() {
+    public Map<String, SecondMetricStats> activeSize() {
         return convert(getResult().activeSizePerSec);
     }
 

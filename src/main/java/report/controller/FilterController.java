@@ -107,7 +107,7 @@ public class FilterController {
                         r.requestOutPerSec, date, from, to, interval);
                 break;
             case "active-size":
-                result = filterService.filterMetric(
+                result = filterService.filterSecondMetricStats(
                         r.activeSizePerSec, date, from, to, interval);
                 break;
             case "val":

@@ -127,7 +127,7 @@ public class MetricsFilterService {
                         ? LocalTime.MAX
                         : parseFlexibleTime(to);
 
-        Map<String, FilteredChartPoint> result = new TreeMap<>();
+        Map<String, StatsBucket> buckets = new TreeMap<>();
 
         for (var e : source.entrySet()) {
 
@@ -152,11 +152,22 @@ public class MetricsFilterService {
             if (s.getCount() == 0)
                 continue;
 
-            result.put(formatTimestamp(dt),
+            String bucketKey = getBucket(ts, intervalSeconds);
+
+            buckets.computeIfAbsent(bucketKey, key -> new StatsBucket())
+                    .add(s);
+        }
+
+        Map<String, FilteredChartPoint> result = new TreeMap<>();
+
+        for (var entry : buckets.entrySet()) {
+            StatsBucket bucket = entry.getValue();
+
+            result.put(entry.getKey(),
                     new FilteredChartPoint(
-                            s.getMin(),
-                            s.getAvg(),
-                            s.getMax()
+                            bucket.min,
+                            bucket.getAvg(),
+                            bucket.max
                     ));
         }
 
@@ -234,5 +245,29 @@ public class MetricsFilterService {
         }
 
         return LocalTime.parse(time);
+    }
+
+    private static class StatsBucket {
+        private double sum = 0;
+        private long count = 0;
+        private long min = Long.MAX_VALUE;
+        private long max = Long.MIN_VALUE;
+
+        private void add(SecondMetricStats stats) {
+            long sampleCount = stats.getCount();
+
+            if (sampleCount <= 0) {
+                return;
+            }
+
+            sum += stats.getAvg() * sampleCount;
+            count += sampleCount;
+            min = Math.min(min, stats.getMin());
+            max = Math.max(max, stats.getMax());
+        }
+
+        private double getAvg() {
+            return count == 0 ? 0 : sum / count;
+        }
     }
 }

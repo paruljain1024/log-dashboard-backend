@@ -37,7 +37,7 @@ public class MetricsResult implements java.io.Serializable {
     public Map<Long, Integer> failurePerSec = new HashMap<>();
     public Map<Long, Integer> refusedPerSec = new HashMap<>();
 
-    public Map<Long, Long> activeSizePerSec = new HashMap<>();
+    public Map<Long, SecondMetricStats> activeSizePerSec = new HashMap<>();
 
     public Map<Long, SecondMetricStats> rttPerSec = new HashMap<>();
     public Map<Long, SecondMetricStats> valPerSec = new HashMap<>();

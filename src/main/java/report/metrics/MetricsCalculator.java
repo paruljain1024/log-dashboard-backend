@@ -70,7 +70,9 @@ public class MetricsCalculator {
         }
 
         if (activeSize != null) {
-            r.activeSizePerSec.put(secondKey, activeSize);
+            r.activeSizePerSec
+                    .computeIfAbsent(secondKey, k -> new SecondMetricStats())
+                    .add(activeSize);
             r.minActiveSize = Math.min(r.minActiveSize, activeSize);
             r.maxActiveSize = Math.max(r.maxActiveSize, activeSize);
             totalActiveSize += activeSize;
@@ -151,7 +153,7 @@ public class MetricsCalculator {
         o.failurePerSec.forEach(
                 (k, v) -> r.failurePerSec.merge(k, v, Integer::sum));
 
-        o.activeSizePerSec.forEach(r.activeSizePerSec::put);
+        mergeStats(r.activeSizePerSec, o.activeSizePerSec);
 
         mergeStats(r.valPerSec, o.valPerSec);
         mergeStats(r.topPerSec, o.topPerSec);
